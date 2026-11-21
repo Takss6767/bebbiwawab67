@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Boquete of Flowers this Month</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&display=swap">
+<style>
+:root{box-sizing:border-box;color-scheme:dark;--pink:#c93a7c;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--pink:#c93a7c}}
+:root[data-theme="light"]{--pink:#c93a7c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--pink);overflow-x:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+#sp{width:1px}
+#env{position:fixed;left:50%;bottom:calc(1.5rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.6);width:5rem;height:5rem;font-size:2.6rem;line-height:1;background:rgba(255,255,255,.92);border:0;border-radius:50%;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .6s,transform .6s;z-index:4}
+#env.show{opacity:1;pointer-events:auto;transform:translateX(-50%) scale(1);animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}
+#ltr{position:fixed;inset:0;background:rgba(40,5,25,.6);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:5}
+#ltr[hidden]{display:none}
+.paper{position:relative;background:#fff8f2;color:#4a1d33;width:min(100%,30rem);max-height:85vh;overflow:auto;box-sizing:border-box;border-radius:6px;padding:2rem 1.6rem 1.4rem;font-family:Georgia,'Times New Roman',serif;font-size:1.15rem;line-height:1.65;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.paper p{margin:0 0 1em}
+#lf{margin-top:1.4em;font-style:italic}
+#lc{position:absolute;top:.4rem;right:.6rem;background:none;border:0;font-size:1.8rem;line-height:1;color:inherit;cursor:pointer}
+#env:focus-visible,#lc:focus-visible{outline:3px solid #7a1a6a;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#env.show{animation:none}#env{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="cv" role="img" aria-label="A tall garden of big lilies drawn from the words Chippy, Kiezha and Bebbi, on a pink sky with white stars. Scroll down to see more."></canvas>
+<div id="sp"></div>
+<button id="env" type="button" aria-label="Open the letter">💌</button>
+<div id="ltr" role="dialog" aria-modal="true" aria-labelledby="lt" hidden>
+<div class="paper"><button id="lc" type="button" aria-label="Close the letter">×</button><p id="lt"></p><div id="lb"></div><p id="lf"></p></div>
+</div>
+<script>
+(function(){
+  var LETTER={
+    to:'Dear Chippymunkie, Kiezha, and Bebbi!',
+    body:[
+      "I saw the tiktok you sent last time with the coding sa flowers and na motivate ko... hehe",
+      "First of all.. uhhh I was having a hard time doing HTML and ASCII and its my first time sab with the coloring and shi so nag ask sa AI on how to do it like nagpa tudlo ko and it gave me insights, As I was doing it noh, I really can't stop thinking about you and like I tried my best to work on it like unsay suited nga colors para ma bagay and all and I miss you so much bebbi like it's hard not to think about you and yes IM SUPER ATTACHED TO YOU LIKE FUHHHHH and im making this virtual letter with a boquete of flowers kay like I know you want space and everything and it's fine by me and we do need a break from everything diba huhu..",
+      "I Miss your Voice.",
+      "I Miss your Touch.",
+      "I Miss your Smell",
+      "I Miss EVERYTHING about you! <3 >;",
+      "As of now I don't wanna say my thoughts muna about the situation right now kay we have plenty of time in the world to talk about it in person like sincere and genuine feelings about this and that.",
+      "Kay ano man jud whenever you're near, everything feels calmer and warmer, as if the whole room settles into something better.",
+      "Your attitude toward me, how you show up with care and patience and make me feel like I matter,is something I never take for granted.",
+      "You make me feel chosen, and that means more to me than I can say, and the you spoiling me and shi idk it feels sooo new to me Everything feels so nice and im so happy that I met you.. and daghan kaayo koi FIRSTS saimo HAHAHAHHAHah like woahh..",
+      "Jokes aside, I do miss you, bebbi.. I hope we can come into contact soonest.."
+    ],
+    from:'Miggy,'
+  };
+  var K=1.7,PAGES=6,S='Chippy*Kiezha*Bebbi*',SL=S.length,PI=Math.PI;
+  var cv=document.getElementById('cv'),ctx=cv.getContext('2d'),sp=document.getElementById('sp'),mk=document.createElement('canvas'),m;
+  var W,H,COLS,ROWS,RX,cw,ch,n,rv,maxR,R,Hd,Hw,Rb,stars,bg,T0=0,raf=0,lastDraw=0,cc={},FL=[];
+  var calm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  function el(x,y,rx,ry,rot,c){m.fillStyle=c;m.beginPath();m.ellipse(x,y,Math.max(.01,rx),Math.max(.01,ry),rot,0,7);m.fill()}
+  function ln(x1,y1,x2,y2,c,w){m.strokeStyle=c;m.lineWidth=w;m.beginPath();m.moveTo(x1,y1);m.lineTo(x2,y2);m.stroke()}
+  var P={red:['#ff5a36','#a01c1c','#ffb08a'],pink:['#ff8fd0','#8a1f7a','#ffd1ef'],white:['#f2e8e2','#d9a98f','#ffffff'],yellow:['#f2c230','#c27a10','#fff08a'],peach:['#e8a27a','#a65a3a','#ffe0c8'],mag:['#9a4cd6','#4a1a7a','#d8a8ff'],dark:['#7a0f3a','#2a0518','#c23a68']};
+  var TY=['red','pink','white','yellow','peach','mag','dark'],GR=['#2f9f4a','#4fd05a','#9be66a'];
+  function petal(L,w,p){
+    var g=m.createLinearGradient(0,0,0,-L);g.addColorStop(0,p[1]);g.addColorStop(.4,p[0]);g.addColorStop(1,p[2]);
+    m.fillStyle=g;m.beginPath();m.moveTo(0,0);m.bezierCurveTo(w*1.3,-L*.25,w*1.1,-L*.7,0,-L);m.bezierCurveTo(-w*1.1,-L*.7,-w*1.3,-L*.25,0,0);m.fill();
+    m.globalAlpha=.55;ln(0,-L*.08,0,-L*.8,p[1],Math.max(.6,w*.1));m.globalAlpha=1;
+    m.fillStyle=p[1];for(var k=0;k<9;k++){m.beginPath();m.arc((R()-.5)*w*.9,-L*(.1+R()*.4),Math.max(.6,w*.07),0,7);m.fill()}
+  }
+  function lily(x,y,r,rot,p,seed){
+    R=rng(seed);var pass,i,a;
+    for(pass=1;pass>=0;pass--)for(i=pass;i<6;i+=2){m.save();m.translate(x,y);m.rotate(rot+i*PI/3);petal(pass?r*.88:r,pass?r*.2:r*.26,p);m.restore()}
+    for(i=0;i<6;i++){a=rot+i*PI/3+PI/6;var ex=x+Math.cos(a)*r*.5,ey=y+Math.sin(a)*r*.5;ln(x,y,ex,ey,'#a8501a',Math.max(.8,r*.02));el(ex,ey,r*.08,r*.05,a,'#ffb347')}
+    el(x,y,r*.07,r*.07,0,'#9be06a');
+  }
+  function world(t,y0,y1){
+    var bx=COLS/2,i,pts=[];
+    // sway the flower heads, keep the bottom of each stem fixed
+    FL.forEach(function(f,k){
+      var ph=k*1.3;
+      pts.push({x:f.x+Math.sin(t*.9+ph)*f.r*.03,y:f.y+Math.cos(t*.7+ph)*f.r*.02,r:f.r*(1+.03*Math.sin(t*1.4+ph)),rot:f.rot+Math.sin(t*.6+ph)*.12,p:P[f.t],k:k});
+    });
+    // stems + leaves
+    pts.forEach(function(p){
+      var ex=bx+(p.x-bx)*.12,ey=Hw+5,cy=(p.y+Hw)/2;
+      m.lineCap='round';
+      m.strokeStyle=GR[p.k%3];m.lineWidth=Math.max(1.6,p.r*.06);
+      m.beginPath();m.moveTo(p.x,p.y);m.quadraticCurveTo(p.x,cy,ex,ey);m.stroke();
+      [.3,.5,.7,.85].forEach(function(u,j){
+        var v=1-u,px=v*v*p.x+2*v*u*p.x+u*u*ex,py=v*v*p.y+2*v*u*cy+u*u*ey,L=p.r*.9,s=j%2?1:-1;
+        if(py<y0-L||py>y1+L)return;
+        el(px+s*L*.45,py-L*.1,L*.5,L*.13,s*-.5,GR[(p.k+j)%3]);
+      });
+    });
+    // leaf fan at the very bottom
+    for(i=0;i<22;i++){var a=-PI/2+(i-10.5)*.17+Math.sin(t*.8+i)*.03,len=Rb*(1+(i*.37%1)*.5);
+      el(bx+Math.cos(a)*len/2,Hw+4+Math.sin(a)*len/2,len/2,Rb*.07,a,GR[i%3])}
+    // flowers, small ones first
+    pts.slice().sort(function(a,b){return a.r-b.r}).forEach(function(p){
+      if(p.y+p.r<y0||p.y-p.r>y1)return;lily(p.x,p.y,p.r,p.rot,p.p,p.k*7+1);
+    });
+    // white petals drifting through the screen
+    for(i=0;i<14;i++){var x=((i*.618)%1)*COLS+Math.sin(t*.8+i)*4,y=((t*(4+(i%5)*1.5)+i*37)%(Hd+10))-5;
+      el(x,y0+y,1.5,.9,t+i,'#ffffff')}
+  }
+  function build(){
+    var cwT=W<600?7:8,i;
+    COLS=Math.round(W/cwT);ROWS=Math.round(H/(cwT*K));RX=ROWS+2;n=COLS*RX;cw=W/COLS;ch=H/ROWS;
+    mk.width=COLS;mk.height=RX;m=mk.getContext('2d',{willReadFrequently:true});
+    Hd=ROWS*K;Hw=Hd*PAGES;Rb=Math.min(COLS*.34,Hd*.45);
+    var rr=rng(9),dx=COLS<90?.14:.2;FL=[];
+    for(i=0;i<PAGES;i++){
+      FL.push({t:TY[i%7],x:COLS*(.5+(i%2?dx:-dx))+(rr()-.5)*4,y:Hd*(.5+i*.85),r:Rb*(.8+rr()*.25),rot:rr()*6});
+      FL.push({t:TY[(i+3)%7],x:COLS*(.5+(i%2?-dx:dx))+(rr()-.5)*4,y:Hd*(.95+i*.85),r:Rb*.55,rot:rr()*6});
+    }
+    rv=new Float32Array(n);maxR=0;var md=Math.hypot(COLS/2,Hd/2);
+    for(i=0;i<n;i++){var d=Math.hypot((i%COLS)+.5-COLS/2,(((i/COLS)|0)+.5)*K-Hd/2)/md;rv[i]=d*3.2+Math.random()*.9;if(rv[i]>maxR)maxR=rv[i]}
+    stars=[];for(i=0;i<130;i++)stars.push([Math.random()*W,Math.random()*H,Math.random()*6.28,Math.random()<.25?3:1.6,.2+Math.random()*.5]);
+    bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#c93a7c');bg.addColorStop(1,'#ee5f9f');
+    sp.style.height=(H*PAGES)+'px';
+  }
+  function render(ts,T){
+    var t=ts/1000,sy=window.scrollY||0,off=Math.floor(sy/ch),frac=sy-off*ch,y0=off*K,i,k;
+    m.setTransform(1,0,0,1,0,0);m.clearRect(0,0,COLS,RX);m.scale(1,1/K);m.translate(0,-y0);
+    world(t,y0,y0+RX*K);
+    var px=m.getImageData(0,0,COLS,RX).data;
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    for(k=0;k<stars.length;k++){var s=stars[k],yy=((s[1]-sy*.25)%H+H)%H;
+      ctx.fillStyle='rgba(255,255,255,'+(s[4]+.5*Math.abs(Math.sin(ts/700+s[2])))+')';
+      if(s[3]>2){ctx.fillRect(s[0]-3,yy-.5,6,1.4);ctx.fillRect(s[0]-.5,yy-3,1.4,6)}else ctx.fillRect(s[0],yy,s[3],s[3])}
+    ctx.font='500 '+(cw*1.6)+'px "DM Mono",ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    for(i=0;i<n;i++){
+      if(px[i*4+3]<90||T<rv[i])continue;
+      var c=i%COLS,r=(i/COLS)|0,x=(c+.5)*cw,y=(r+.5)*ch-frac,wr=r+off,chr=S[(c+wr*5)%SL];
+      if(T<rv[i]+.5){ctx.fillStyle='#ffffff';ctx.fillText(chr,x,y);continue}
+      var R_=px[i*4],g=px[i*4+1],b=px[i*4+2],key=(R_>>4)<<8|(g>>4)<<4|(b>>4);
+      ctx.fillStyle=cc[key]||(cc[key]='rgb('+Math.min(255,((R_&240)+8)*1.05+8|0)+','+Math.min(255,((g&240)+8)*1.05+8|0)+','+Math.min(255,((b&240)+8)*1.05+8|0)+')');
+      ctx.fillText(chr,x,y);
+    }
+  }
+  function frame(ts){raf=requestAnimationFrame(frame);if(ts-lastDraw<33)return;lastDraw=ts;render(ts,(ts-T0)/1000)}
+  var pend=0;
+  function start(){
+    cancelAnimationFrame(raf);T0=performance.now();
+    if(calm){render(performance.now(),99);return}
+    raf=requestAnimationFrame(frame);
+  }
+  function setup(){var d=window.devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);build();start()}
+  var tm;addEventListener('resize',function(){clearTimeout(tm);tm=setTimeout(setup,250)});
+  if(calm)addEventListener('scroll',function(){if(pend)return;pend=requestAnimationFrame(function(){pend=0;render(performance.now(),99)})});
+  setup();
+  var env=document.getElementById('env'),ltr=document.getElementById('ltr'),lb=document.getElementById('lb');
+  document.getElementById('lt').textContent=LETTER.to;
+  document.getElementById('lf').textContent=LETTER.from;
+  LETTER.body.forEach(function(t){var p=document.createElement('p');p.textContent=t;lb.appendChild(p)});
+  function peek(){var far=document.documentElement.scrollHeight-innerHeight-(window.scrollY||0);env.classList.toggle('show',far<innerHeight*.6)}
+  addEventListener('scroll',peek);peek();
+  env.addEventListener('click',function(){ltr.hidden=false;document.getElementById('lc').focus()});
+  document.getElementById('lc').addEventListener('click',function(){ltr.hidden=true;env.focus()});
+  addEventListener('keydown',function(e){if(e.key==='Escape'&&!ltr.hidden){ltr.hidden=true;env.focus()}});
+})();
+</script>
+</body>
+</html>
